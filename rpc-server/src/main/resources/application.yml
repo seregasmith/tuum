@@ -1,0 +1,18 @@
+server:
+  port: 8092
+spring:
+  jpa:
+    database: POSTGRESQL
+    show-sql: true
+    generate-ddl: true
+  datasource:
+    url: jdbc:postgresql://localhost:5432/postgres
+    platform: postgres
+    username: postgres
+    password: mysecretpassword
+
+  rabbitmq:
+    host: localhost
+    port: 5672
+    publisher-confirm-type: correlated
+    publisher-returns: true

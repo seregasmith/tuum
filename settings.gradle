@@ -1,2 +1,5 @@
 rootProject.name = 'tuum'
+include 'model'
+include 'gateway'
+include 'rpc-server'
 
