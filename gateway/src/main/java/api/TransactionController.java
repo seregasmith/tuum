@@ -1,9 +1,8 @@
 package api;
 
+import api.dto.common.Response;
 import api.dto.create.transaction.CreateTransactionRequestData;
-import api.dto.create.transaction.CreateTransactionResponseData;
 import api.dto.get.transactions.GetTransactionsRequestData;
-import api.dto.get.transactions.GetTransactionsResponseData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,18 +12,19 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import service.TransactionService;
 
-import java.util.Optional;
-
 import static java.util.Objects.isNull;
 
 @RestController
 public class TransactionController {
 
+    private final ErrorHandler errorHandler;
     private final TransactionService transactionService;
 
     @Autowired
-    public TransactionController(TransactionService transactionService) {
+    public TransactionController(TransactionService transactionService,
+                                 ErrorHandler errorHandler) {
         this.transactionService = transactionService;
+        this.errorHandler = errorHandler;
     }
 
     @GetMapping("/transaction")
@@ -33,18 +33,19 @@ public class TransactionController {
             return ResponseEntity
                     .status(HttpStatus.BAD_REQUEST).build();
         }
-        GetTransactionsResponseData foundTransactions = transactionService.findTransactions(rqData);
-        return ResponseEntity.ok().body(foundTransactions);
+        Response res = transactionService.findTransactions(rqData);
+        if (res.hasError()) {
+            return errorHandler.handleError(res);
+        }
+        return ResponseEntity.ok().body(res);
     }
 
     @PostMapping("/transaction/create")
     public ResponseEntity createTransaction(@RequestBody CreateTransactionRequestData rqData) {
-        //todo check incoming params
-        Optional<CreateTransactionResponseData> transactionCreatedOpt = transactionService.createTransaction(rqData);
-        if (transactionCreatedOpt.isEmpty()) {
-            return ResponseEntity
-                    .status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        Response res = transactionService.createTransaction(rqData);
+        if (res.hasError()) {
+            return errorHandler.handleError(res);
         }
-        return ResponseEntity.ok().body(transactionCreatedOpt.get());
+        return ResponseEntity.ok().body(res);
     }
 }

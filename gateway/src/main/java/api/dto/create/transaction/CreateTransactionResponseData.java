@@ -91,7 +91,7 @@ public class CreateTransactionResponseData {
             return this;
         }
 
-        public Builder withBalanceAfterTransaction(Balance description) {
+        public Builder withBalanceAfterTransaction(Balance balanceAfterTransaction) {
             this.balanceAfterTransaction = balanceAfterTransaction;
             return this;
         }
