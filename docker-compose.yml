@@ -1,0 +1,36 @@
+version: "3.9"
+
+services:
+  gateway:
+    build: ./gateway
+    ports:
+      - 8091:8091
+    depends_on:
+      - db
+      - rabbit
+      - rpc-server
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/postgres
+      - AMQP_HOST=rabbit
+      - SPRING_AMQP_HOST=rabbit
+  rpc-server:
+    build: ./rpc-server
+    ports:
+      - 8092:8092
+    depends_on:
+      - db
+      - rabbit
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/postgres
+      - AMQP_HOST=rabbit
+      - SPRING_AMQP_HOST=rabbit
+  db:
+    image: postgres
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_PASSWORD=mysecretpassword
+  rabbit:
+    image: rabbitmq
+    ports:
+      - 5672:5672
