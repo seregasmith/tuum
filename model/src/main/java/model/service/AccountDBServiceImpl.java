@@ -80,11 +80,11 @@ public class AccountDBServiceImpl implements AccountDbService {
     public CreateTransactionPayload processTransaction(CreateTransactionServiceRequest rqData) {
         Long accountId = rqData.getAccountId();
         if (isNull(accountId) || isNull(rqData.getCurrency())) {
-            CreateTransactionPayload.asError(ErrorCode.INCORRECT_PARAMS, "Invalid params");
+            return CreateTransactionPayload.asError(ErrorCode.INCORRECT_PARAMS, "Invalid params");
         }
         Optional<AccountWithBalances> accountOpt = findAccountWithBalances(accountId);
         if (accountOpt.isEmpty()) {
-            CreateTransactionPayload.asError(ErrorCode.NOT_FOUND, "Account not found by id");
+            return CreateTransactionPayload.asError(ErrorCode.NOT_FOUND, "Account not found by id");
         }
         Account account = accountOpt
                 .map(AccountWithBalances::getAccount)
@@ -96,11 +96,15 @@ public class AccountDBServiceImpl implements AccountDbService {
                 .filter(b -> b.getCurrency().equals(rqData.getCurrency()))
                 .findFirst();
 
+        if (balance.isEmpty()) {
+            return CreateTransactionPayload.asError(ErrorCode.NOT_FOUND, String.format("Balance %s not found", rqData.getCurrency()));
+        }
+
         return balance
                 .filter(b -> isAmountEnoughToProcessTransaction(b, rqData))
                 .map(b -> processTransaction(b, rqData, account))
                 .map(CreateTransactionPayload::new)
-                .orElseGet(() -> CreateTransactionPayload.asError(ErrorCode.DB_ERROR, "Not created in DB"));
+                .orElseGet(() -> CreateTransactionPayload.asError(ErrorCode.DB_ERROR, "Not enough amount on balance"));
 
     }
 

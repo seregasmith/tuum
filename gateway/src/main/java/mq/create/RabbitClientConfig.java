@@ -14,7 +14,7 @@ import org.springframework.context.annotation.Configuration;
 public class RabbitClientConfig {
     public static final String RPC_CREATE_TRANSACTION_MSG_QUEUE = "rpc_create_transaction";
     public static final String RPC_CREATE_ACCOUNT_MSG_QUEUE = "rpc_create_account";
-    public static final String RPC_REPLY_MSG_QUEUE = "rpc_reply_create_transaction";
+    public static final String RPC_REPLY_MSG_QUEUE = "rpc_reply";
     public static final String RPC_EXCHANGE = "rpc_exchange";
 
     @Bean

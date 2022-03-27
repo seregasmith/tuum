@@ -25,10 +25,6 @@ import java.util.concurrent.ThreadLocalRandom;
 import static java.util.Arrays.asList;
 import static org.junit.Assert.*;
 
-//@RunWith(SpringJUnit4ClassRunner.class)
-//@SpringBootTest()
-//@Import(TestConfig.class)
-
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(
         classes = {TestConfig.class},
